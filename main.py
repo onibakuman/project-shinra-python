@@ -1,7 +1,8 @@
 import pytchat
 import asyncio
 
-
+audio_dir = "sfx/"
+commands = { "!cum" : "cum.wav" }
 
 def check_if_command(message):
     if "cum" in message:
