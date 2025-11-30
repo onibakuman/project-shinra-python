@@ -1,5 +1,6 @@
 import pytchat
 import asyncio
+import threading
 
 from twitchAPI.twitch import Twitch
 from twitchAPI.oauth import UserAuthenticator
@@ -34,7 +35,7 @@ def check_if_command(message):
         if full_command in message:
             print("yay we did it. command: " + command + " executed!")
 
-async def main(video_id):
+async def listen_to_youtube_chat(video_id):
     chat = pytchat.create(video_id=video_id)
     try:
         while chat.is_alive():
@@ -48,7 +49,6 @@ async def main(video_id):
         chat.terminate()
 
 async def listen_to_twitch_chat(channel_name):
-    # Set up Twitch client and authenticate
     twitch = await Twitch(APP_ID, APP_SECRET)
     auth = UserAuthenticator(twitch, USER_SCOPE)
     token, refresh_token = await auth.authenticate()
@@ -82,9 +82,34 @@ async def listen_to_twitch_chat(channel_name):
         chat.stop()
         await twitch.close()
 
+def run_youtube_thread(video_id):
+    asyncio.run(listen_to_youtube_chat(video_id))
+
+def run_twitch_thread(channel_name):
+    asyncio.run(listen_to_twitch_chat(channel_name))
+
+def prepare_threads(video_id, channel_name):
+    # Create and start threads
+    youtube_thread = threading.Thread(target=run_youtube_thread, args=(video_id,))
+    twitch_thread = threading.Thread(target=run_twitch_thread, args=(channel_name,))
+    
+    youtube_thread.daemon = True  # Optional: Auto-terminate if main exits
+    twitch_thread.daemon = True
+    
+    youtube_thread.start()
+    twitch_thread.start()
+    
+    try:
+        # Wait for both to complete (or Ctrl+C)
+        youtube_thread.join()
+        twitch_thread.join()
+    except KeyboardInterrupt:
+        print("Shutting down...")
+        # Threads will handle their own KeyboardInterrupt inside async
+
 if __name__ == "__main__":
     import sys
     vid = sys.argv[1] if len(sys.argv) > 1 else "VIDEO_ID_HERE"
-    read_credential_file("fake_credentials.txt")
-    asyncio.run(main(vid))
-    asyncio.run(listen_to_twitch_chat("onibakuman"))
+    read_credential_file("twitch_credentials.txt")
+
+    prepare_threads(vid, "onibakuman")
