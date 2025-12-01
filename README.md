@@ -8,4 +8,5 @@
 
 3) To run execute:
     python main.py <youtube-video-id>
-now you are good to go!
+
+Now you are good to go!
