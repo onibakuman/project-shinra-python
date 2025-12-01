@@ -1,3 +1,4 @@
+import threading
 import pytchat
 import asyncio
 from utils import commands
@@ -14,3 +15,12 @@ async def listen_to_youtube_chat(video_id):
         pass
     finally:
         chat.terminate()
+
+def sync_wrapper(video_id):
+    asyncio.run(listen_to_youtube_chat(video_id))
+
+def run(video_id):
+    thread = threading.Thread(target=sync_wrapper, args=(video_id,))
+    thread.start()
+
+    return thread

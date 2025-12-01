@@ -2,7 +2,7 @@ from twitchAPI.twitch import Twitch
 from twitchAPI.oauth import UserAuthenticator
 from twitchAPI.type import AuthScope, ChatEvent
 from twitchAPI.chat import Chat, EventData, ChatMessage
-
+    
 APP_ID = ""
 APP_SECRET = ""
 USER_SCOPE = [AuthScope.CHAT_READ]

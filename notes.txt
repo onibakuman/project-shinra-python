@@ -1,0 +1,18 @@
+platforms
+  - youtube 
+  - twitch
+
+combined_chat
+  - give it a list of platforms
+  - chat_processor that is configured and apply it to the flow of messages
+
+chat_task (do it as a functor)
+  - __call__(self)
+
+chat_processor
+  - list of chat_tasks
+  - iterate through all of them and perform the actions
+  - opens a websocket
+
+browser_source
+  - html file which opens a websocket to chat_processor
